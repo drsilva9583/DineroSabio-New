@@ -6,4 +6,87 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-  
+
+model User {
+  id Int @id @default(autoincrement())
+  email String @unique
+  name String?
+  lessonProgress UserLessonProgress[]
+}
+model Course {
+  id Int @id @default(autoincrement())
+  courseTitle String
+  courseTitle_es String
+  courseDescription String
+  courseDescription_es String
+  estimatedTime Int
+  difficultyLevel String
+  difficultyLevel_es String
+  lessons Lesson[]
+}
+
+model Lesson {
+  id Int @id @default(autoincrement())
+  lessonTitle String
+  lessonTitle_es String
+  lessonContent String
+  lessonContent_es String
+  courses Course? @relation(fields: [courseId], references: [id])
+  courseId Int?
+  quizzes Quiz[]
+  tips Tip[]
+  calculators Calculator[]
+  examples Example[]
+  progress UserLessonProgress[]
+}
+
+model Quiz {
+  id Int @id @default(autoincrement())
+  question String
+  question_es String
+  options String[]
+  options_es String[]
+  correctAnswer String
+  correctAnswer_es String
+  lesson Lesson? @relation(fields: [lessonId], references: [id])
+  lessonId Int?
+}
+
+model Tip {
+  id Int @id @default(autoincrement())
+  tipContent String
+  tipContent_es String
+  lesson Lesson? @relation(fields: [lessonId], references: [id])
+  lessonId Int?
+}
+
+model Example {
+  id Int @id @default(autoincrement())
+  scenario String
+  scenario_es String
+  analogy String
+  analogy_es String
+  lesson Lesson? @relation(fields: [lessonId], references: [id])
+  lessonId Int?
+}
+
+model Calculator {
+  id Int @id @default(autoincrement())
+  calculatorType String
+  calculatorType_es String
+  description String
+  description_es String
+  lesson Lesson? @relation(fields: [lessonId], references: [id])
+  lessonId Int?
+}
+
+model UserLessonProgress {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  lesson Lesson @relation(fields: [lessonId], references: [id])
+  lessonId Int
+  isCompleted Boolean @default(false)
+
+  @@unique ([userId, lessonId])
+}
