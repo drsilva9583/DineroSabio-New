@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/elements": "^0.24.2",
+    "@prisma/adapter-neon": "^7.2.0",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "class-variance-authority": "^0.7.1",

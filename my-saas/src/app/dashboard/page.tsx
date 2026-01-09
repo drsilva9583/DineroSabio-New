@@ -1,3 +1,5 @@
+import Link from "next/link"
+import { db } from "@/lib/db"
 import { Input } from "@/components/ui/input"
 import { ImageIcon } from "lucide-react";
 import { SignOutButton } from '@clerk/nextjs'
@@ -5,6 +7,11 @@ import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Page() {
     const user = await currentUser();
+    const courses = await db.course.findMany({
+        include: {
+            lessons: true,
+        }
+    })
 
   return (
     <>
