@@ -1,17 +1,21 @@
 import { PrismaClient } from '../src/generated/prisma';
-const prisma = new PrismaClient();
-
+import { PrismaPg } from '@prisma/adapter-pg'
+import pg from 'pg'
+const connectionString = process.env.DATABASE_URL
+const pool = new pg.Pool({ connectionString })
+const adapter = new PrismaPg(pool)
+const prisma = new PrismaClient({ adapter })
 
 const load = async () => {
   try {
+    await main()
   } catch (e) {
     console.error(e)
     process.exit(1)
   } finally {
     await prisma.$disconnect()
   }
-}
-load()
+};
 
 async function main() {
     const newUser = await prisma.user.upsert({
@@ -182,5 +186,5 @@ async function main() {
     });
     console.log(`Upserted course2: ${course2.courseTitle}`);
 }
-main()
-    
+
+load();
