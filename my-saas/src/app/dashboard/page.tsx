@@ -46,7 +46,7 @@ export default async function Page() {
                 {courses.map((course) => (
                     <Link 
                         key={course.id} 
-                        href={`/courses/${course.id}`}
+                        href={`/dashboard/courses/${course.id}`}
                         className="border rounded-lg hover:shadow-md hover:scale-102 transition-transform duration-300 flex"
                     >
                         <ImageIcon className="m-4 size-10 shrink-0" />
