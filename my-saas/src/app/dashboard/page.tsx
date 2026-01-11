@@ -1,15 +1,18 @@
-import Link from "next/link"
-import { db } from "@/lib/db"
-import { Input } from "@/components/ui/input"
+import Link from "next/link";
+import { db } from "@/lib/db";
 import { ImageIcon } from "lucide-react";
-import { SignOutButton } from '@clerk/nextjs'
+import { SignOutButton } from '@clerk/nextjs';
 import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Page() {
     const user = await currentUser();
     const courses = await db.course.findMany({
         include: {
-            lessons: true,
+            lessons: {
+                include: {
+                    progress: true,
+                }
+            }
         }
     })
 
@@ -21,12 +24,10 @@ export default async function Page() {
                 <h1 className="text-4xl font-bold">Dinero Sabio</h1>
                 <h3>Learn, Practice, Succeed</h3>
             </div>
-            <div className="">
+            <div>
                 <nav className="flex gap-8 ml-10">
-                    <a href="#" className="text-lg hover:underline">Home</a>
-                    <a href="#" className="text-lg hover:underline">Lessons</a>
+                    <a href="/dashboard" className="text-lg hover:underline">Home</a>
                     <a href="#" className="text-lg hover:underline">Portfolio</a>
-                    <a href="#" className="text-lg hover:underline">Other</a>
                 </nav>
             </div>
             <div className="absolute right-32">
@@ -37,11 +38,29 @@ export default async function Page() {
             </div>
         </header>
         <main>
-            <div className="flex justify-center">
-                <Input placeholder="Search lessons..." className="w-1/2 justify-center h-10" />
+            <div className="flex items-center justify-center flex-direction flex-col">
+                <h1 className="text-3xl font-bold mb-1">Your Learning Dashboard</h1>
+                <p className="text-gray-600">Choose a course to begin</p>
             </div>
-            <div>
-                {/* Dashboard content goes here */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+                {courses.map((course) => (
+                    <Link 
+                        key={course.id} 
+                        href={`/courses/${course.id}`}
+                        className="border rounded-lg hover:shadow-md hover:scale-102 transition-transform duration-300 flex"
+                    >
+                        <ImageIcon className="m-4 size-10 shrink-0" />
+                        <div key={course.id} className="p-4 flex flex-col flex-1">
+                            <h2 className="text-lg font-semibold">{course.courseTitle}</h2>
+                            <p className="text-sm text-gray-600">{course.courseDescription}</p>
+                            <div className="flex gap-4 p-4 text-xs mt-auto">
+                                <p className="rounded-md text-gray-500 bg-gray-100 text-center p-1">{course.lessons.length} lessons</p>
+                                <p className="rounded-md text-gray-500 bg-gray-100 text-center p-1">{course.estimatedTime} minutes</p>
+                                <p className="rounded-md text-gray-500 bg-gray-100 text-center p-1">{course.difficultyLevel}</p>
+                            </div>
+                        </div>
+                    </Link>
+                ))}
             </div>
         </main>
     </>
