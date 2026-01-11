@@ -8,35 +8,12 @@ export default async function Page() {
     const user = await currentUser();
     const courses = await db.course.findMany({
         include: {
-            lessons: {
-                include: {
-                    progress: true,
-                }
-            }
+            lessons: true
         }
     })
 
   return (
     <>
-        <header className="p-6 border-b mb-8 flex items-center">
-            <ImageIcon className="mr-4" />
-            <div>
-                <h1 className="text-4xl font-bold">Dinero Sabio</h1>
-                <h3>Learn, Practice, Succeed</h3>
-            </div>
-            <div>
-                <nav className="flex gap-8 ml-10">
-                    <a href="/dashboard" className="text-lg hover:underline">Home</a>
-                    <a href="#" className="text-lg hover:underline">Portfolio</a>
-                </nav>
-            </div>
-            <div className="absolute right-32">
-                Welcome {user?.firstName ? `${user.firstName}` : "Guest"}
-            </div>
-            <div className="ml-auto bg-green-700 hover:bg-green-800 rounded-full px-4 py-2">
-                <SignOutButton />
-            </div>
-        </header>
         <main>
             <div className="flex items-center justify-center flex-direction flex-col">
                 <h1 className="text-3xl font-bold mb-1">Your Learning Dashboard</h1>

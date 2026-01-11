@@ -1,6 +1,7 @@
 import { ReactNode } from "react"
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import DashboardHeader from "@/components/dashboard/Header";
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
     const { userId } = await auth();
@@ -11,6 +12,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
 
     return (
         <div className="min-h-screen">
+            <DashboardHeader />
             <main>
                 {children}
             </main>
