@@ -13,9 +13,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     return (
         <div className="min-h-screen">
             <DashboardHeader />
-            <main>
-                {children}
-            </main>
+            {children}
         </div>
     );
 }

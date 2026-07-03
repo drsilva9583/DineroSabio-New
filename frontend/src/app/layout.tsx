@@ -6,7 +6,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Dinero Sabio',
-  description: 'Billingual Personal Finance for First Time Investors',
+  description: 'Bilingual Personal Finance for First Time Investors',
 }
 
 export default function RootLayout({

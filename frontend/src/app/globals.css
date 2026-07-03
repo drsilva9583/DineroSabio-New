@@ -47,6 +47,11 @@
   --color-easygreen: #D1F7C4;
   --color-mediumyellow: #FFEAB6;
   --color-hardred: #FF9EB7;
+  --color-dashboard-bg: #15AB60;
+  --color-dashboard-bg-dark: #119955;
+  --color-theme-green: #15AB15;
+  --color-theme-green-dark: #108210;
+  --color-text-gray: #696969;
 }
 
 :root {
