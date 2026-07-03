@@ -28,7 +28,7 @@
     "@clerk/nextjs": "^6.36.5",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20.19.27",
-    "@types/pg": "^8.16.0",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
