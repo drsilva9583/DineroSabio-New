@@ -5,7 +5,6 @@ import { PiggyBank } from 'lucide-react';
 import { SignOutButton } from '@clerk/nextjs';
 import { currentUser } from "@clerk/nextjs/server";
 import { getLessonCountColor, getTimeColor, getDifficultyColor } from "@/lib/courseHelpers";
-import AiMentor from "@/components/dashboard/AiMentor";
 
 export default async function Page() {
     const user = await currentUser();
@@ -44,7 +43,6 @@ export default async function Page() {
                     </Link>
                 ))}
             </div>
-            <AiMentor/>
         </main>
     </>
   );
