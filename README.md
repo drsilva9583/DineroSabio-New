@@ -72,29 +72,56 @@ The AI Mentor runs as a separate FastAPI microservice so the Anthropic API key n
 
 ## Local Setup
 
+The app runs as **two processes** (Next.js frontend + FastAPI AI service) in two terminals. The database is hosted on **Neon (cloud Postgres)**, so no local Postgres or Docker is required to develop. Redis is only needed once price caching lands (not yet).
+
+### 1. Clone
+
 ```bash
-# 1. Clone
 git clone <repo-url> && cd DineroSabio-New
+```
 
-# 2. Start infrastructure (Postgres + Redis + AI service)
-cp backend/.env.example backend/.env   # add your ANTHROPIC_API_KEY
-docker compose up -d
+### 2. Frontend — Next.js (`frontend/`)
 
-# 3. Set up the Next.js frontend
-cd my-saas
+```bash
+cd frontend
 npm install
-# Create .env with DATABASE_URL, CLERK keys, and NEXT_PUBLIC_AI_SERVICE_URL
-npx prisma db push
-npx prisma db seed
-npm run dev   # → http://localhost:8080
 
-# 4. (Optional) Run FastAPI outside Docker for hot-reload
-cd ../backend
-python -m venv .venv && source .venv/bin/activate
+# Create frontend/.env with:
+#   DATABASE_URL           → Neon connection string
+#   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY / CLERK_SECRET_KEY
+#   NEXT_PUBLIC_AI_SERVICE_URL=http://localhost:8000
+
+npx prisma generate   # generate the type-safe Prisma client
+npx prisma db push    # sync schema to Neon (first run / after schema changes)
+npx prisma db seed    # load the 10 assets + courses/lessons
+npm run dev           # → http://localhost:8080
+```
+
+### 3. Backend — FastAPI AI service (`backend/`)
+
+In a second terminal:
+
+```bash
+cd backend
+
+# Copy the env template and add your real ANTHROPIC_API_KEY
+cp .env.example .env            # Windows PowerShell: Copy-Item .env.example .env
+
+# Create + activate a virtualenv
+python -m venv .venv
+source .venv/bin/activate       # Windows PowerShell: .venv\Scripts\Activate.ps1
+
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
-# → http://localhost:8000/docs
+# Swagger docs → http://localhost:8000/docs
+# Health check → http://localhost:8000/health
 ```
+
+Get an API key at [console.anthropic.com](https://console.anthropic.com) → **API Keys** (add billing credits first — Haiku is very cheap). The key lives only in `backend/.env` and never reaches the browser.
+
+### 4. (Optional) Docker infrastructure
+
+`docker compose up postgres redis` is available if you'd rather run Postgres/Redis locally instead of Neon — but the default setup above needs neither.
 
 ---
 
@@ -118,7 +145,7 @@ User ──── UserLessonProgress ──── Lesson ──── Course
 ```
 DineroSabio-New/
 ├── docker-compose.yml
-├── frontend/               ← Next.js app (rename to frontend/)
+├── frontend/               ← Next.js app (runs on :8080)
 │   ├── prisma/schema.prisma
 │   └── src/
 │       ├── app/           ← App Router pages + layouts

@@ -1,0 +1,14 @@
+# Claude Code skills
+.claude/skills/
+.claude/settings.local.json
+
+# GitHub-scoped skills
+.github/skills/
+.github/hooks/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml

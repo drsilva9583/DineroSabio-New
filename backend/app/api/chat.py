@@ -2,6 +2,8 @@ from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 import anthropic
+from anthropic.types import MessageParam
+from typing import cast
 
 from app.core.config import settings
 
@@ -14,7 +16,7 @@ understand financial concepts for the first time. Rules:
 - Ground every concept in a culturally relevant analogy (family, food, neighborhood businesses, \
   quinceañera savings, etc.).
 - Cover: saving habits, compound interest, diversification, stocks, ETFs, and risk management.
-- Keep responses concise — 2-4 short paragraphs max.
+- Keep responses concise — 1-3 short paragraphs max.
 - Be encouraging. Many users have never invested before.
 - Never give specific investment advice (don't say "buy X stock"). Educate, don't advise.\
 """
@@ -26,7 +28,7 @@ primera generación a entender conceptos financieros por primera vez. Reglas:
 - Fundamenta cada concepto en una analogía culturalmente relevante (familia, comida, negocios del \
   vecindario, ahorros para quinceañera, etc.).
 - Cubre: hábitos de ahorro, interés compuesto, diversificación, acciones, ETFs y gestión del riesgo.
-- Mantén las respuestas concisas — máximo 2-4 párrafos cortos.
+- Mantén las respuestas concisas — máximo 1-3 párrafos cortos.
 - Sé motivador. Muchos usuarios nunca han invertido antes.
 - Nunca des consejos de inversión específicos (no digas "compra la acción X"). Educa, no aconsejes.\
 """
@@ -52,7 +54,7 @@ async def chat(request: ChatRequest) -> StreamingResponse:
             model="claude-haiku-4-5-20251001",
             max_tokens=1024,
             system=system_prompt,
-            messages=[{"role": m.role, "content": m.content} for m in request.messages],
+            messages=cast(list[MessageParam], [{"role": m.role, "content": m.content} for m in request.messages]),
         ) as stream:
             for text in stream.text_stream:
                 yield text
