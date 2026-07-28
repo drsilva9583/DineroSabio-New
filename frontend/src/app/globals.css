@@ -3,40 +3,82 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ------------------------------------------------------------------ *
+ *  Dinero Sabio — Design Tokens
+ *
+ *  Two-layer system (the shadcn convention, kept on purpose):
+ *   1. :root / .dark hold the RAW values  (--cream, --green, ...)
+ *   2. @theme inline maps them to Tailwind utilities (bg-cream, text-green)
+ *
+ *  WHY two layers: raw values can be re-pointed per theme (light/dark)
+ *  in one place, and every utility + shadcn component follows automatically.
+ *
+ *  Palette philosophy: brand hues (green/red) ship in TWO strengths.
+ *   - `-base` : for FILLS behind white text and for large shapes.
+ *   - `-strong`: darker sibling, same hue, for TEXT on cream and small
+ *                button labels — the only versions that clear WCAG AA there.
+ * ------------------------------------------------------------------ */
+
 @theme inline {
+  /* -- Fonts ----------------------------------------------------- */
+  --font-display: var(--font-galindo);   /* Galindo — logo + large headings */
+  --font-sans: var(--font-nunito);       /* Nunito  — body + UI text        */
+
+  /* -- shadcn semantic map (unchanged wiring) -------------------- */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* -- Brand tokens (use these directly: bg-cream, text-green-strong) -- */
+  --color-cream: var(--cream);                   /* page background        */
+  --color-surface: var(--surface);               /* navbar, cards          */
+  --color-surface-sunken: var(--surface-sunken); /* wells, inset panels    */
+  --color-ink: var(--ink);                       /* primary text           */
+  --color-ink-soft: var(--ink-soft);             /* secondary/gray text    */
+
+  --color-green: var(--green);                   /* fill / white-on-green  */
+  --color-green-strong: var(--green-strong);     /* green TEXT on cream     */
+  --color-green-tint: var(--green-tint);         /* soft green badge bg     */
+
+  --color-red: var(--red);                       /* danger fill            */
+  --color-red-strong: var(--red-strong);         /* red TEXT on cream       */
+  --color-red-tint: var(--red-tint);             /* soft red badge bg       */
+
+  /* -- Difficulty badges (retuned to harmonize with olive/vermilion) -- */
+  --color-easygreen: var(--green-tint);
+  --color-mediumyellow: var(--amber-tint);
+  --color-hardred: var(--red-tint);
+
+  /* -- Radius scale --------------------------------------------- */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -44,83 +86,141 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
-  --color-easygreen: #D1F7C4;
-  --color-mediumyellow: #FFEAB6;
-  --color-hardred: #FF9EB7;
-  --color-dashboard-bg: #15AB60;
-  --color-dashboard-bg-dark: #119955;
-  --color-theme-green: #15AB15;
-  --color-theme-green-dark: #108210;
-  --color-text-gray: #696969;
 }
 
+/* ================================================================== *
+ *  LIGHT THEME  — the brand's home turf
+ *  Anchors kept as your EXACT hex (brand fidelity wins); derived
+ *  steps in OKLCH so lightness/chroma relationships stay legible.
+ * ================================================================== */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.75rem;
+
+  /* neutrals / surfaces */
+  --cream: #FFF6DA;                       /* your background            */
+  --surface: #FFFBF0;                     /* your lighter bg (navbar)    */
+  --surface-sunken: oklch(0.945 0.036 96);/* one step under cream        */
+  --ink: oklch(0.22 0.012 80);            /* warm near-black (not pure #000 — softer on cream, still ~13:1) */
+  --ink-soft: #5F5F5F;                    /* your secondary gray (~5.9:1)*/
+
+  /* brand — green */
+  --green: #678A3E;                       /* your main accent (fills)    */
+  --green-strong: oklch(0.49 0.105 132);  /* darker sibling for TEXT (~5.3:1 on cream) */
+  --green-tint: oklch(0.94 0.045 128);    /* soft badge background       */
+
+  /* brand — red */
+  --red: #DB2D26;                         /* your secondary accent       */
+  --red-strong: oklch(0.52 0.215 28);     /* darker red for TEXT (~5:1)  */
+  --red-tint: oklch(0.94 0.045 25);       /* soft badge background       */
+
+  /* supporting — amber (difficulty: medium / warnings) */
+  --amber: oklch(0.80 0.135 82);
+  --amber-tint: oklch(0.94 0.06 88);
+
+  /* shadcn semantic assignments */
+  --background: var(--cream);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+
+  --primary: var(--green);                /* buttons: white label MUST be semibold+ (3:1 large-text rule) */
+  --primary-foreground: var(--surface);
+  --secondary: var(--surface-sunken);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface-sunken);
+  --muted-foreground: var(--ink-soft);
+  --accent: var(--green-tint);
+  --accent-foreground: var(--green-strong);
+
+  --destructive: var(--red);
+  --destructive-foreground: var(--surface);
+
+  --border: oklch(0.90 0.022 96);         /* warm-tinted, not gray — matches the cream family */
+  --input: oklch(0.90 0.022 96);
+  --ring: var(--green);                   /* focus ring reads as brand    */
+
+  /* data viz — derived from the brand, not random */
+  --chart-1: var(--green);
+  --chart-2: var(--amber);
+  --chart-3: oklch(0.58 0.10 200);        /* teal — a cool counterweight  */
+  --chart-4: var(--red);
+  --chart-5: oklch(0.55 0.14 300);        /* muted violet                 */
+
+  /* sidebar */
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--green);
+  --sidebar-primary-foreground: var(--surface);
+  --sidebar-accent: var(--green-tint);
+  --sidebar-accent-foreground: var(--green-strong);
+  --sidebar-border: oklch(0.90 0.022 96);
+  --sidebar-ring: var(--green);
 }
 
+/* ================================================================== *
+ *  DARK THEME  — a WARM dark, not a neutral-gray dark.
+ *  WHY: flipping a cream brand to a cold slate-gray dark mode snaps
+ *  the identity. We keep the warm hue in the neutrals and LIGHTEN the
+ *  accents (a color that's readable on cream is too dark on charcoal).
+ *  Starting point — tune against real screens before you ship dark.
+ * ================================================================== */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
+  --cream: oklch(0.21 0.012 80);          /* deep warm brown-black       */
+  --surface: oklch(0.26 0.014 80);        /* raised panels               */
+  --surface-sunken: oklch(0.18 0.010 80);
+  --ink: oklch(0.95 0.020 96);            /* warm off-white text         */
+  --ink-soft: oklch(0.74 0.012 90);
+
+  --green: oklch(0.72 0.115 132);         /* lightened so it reads on dark */
+  --green-strong: oklch(0.80 0.115 132);
+  --green-tint: oklch(0.32 0.055 130);
+
+  --red: oklch(0.68 0.195 28);
+  --red-strong: oklch(0.76 0.175 28);
+  --red-tint: oklch(0.32 0.075 25);
+
+  --amber: oklch(0.82 0.135 82);
+  --amber-tint: oklch(0.34 0.06 85);
+
+  --background: var(--cream);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+
+  --primary: var(--green);
+  --primary-foreground: oklch(0.20 0.012 80);  /* dark label on light-green fill */
+  --secondary: var(--surface-sunken);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface-sunken);
+  --muted-foreground: var(--ink-soft);
+  --accent: var(--green-tint);
+  --accent-foreground: var(--green-strong);
+
+  --destructive: var(--red);
+  --destructive-foreground: oklch(0.20 0.012 80);
+
+  --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --ring: var(--green);
+
+  --chart-1: var(--green);
+  --chart-2: var(--amber);
+  --chart-3: oklch(0.70 0.10 200);
+  --chart-4: var(--red);
+  --chart-5: oklch(0.68 0.14 300);
+
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--green);
+  --sidebar-primary-foreground: oklch(0.20 0.012 80);
+  --sidebar-accent: var(--green-tint);
+  --sidebar-accent-foreground: var(--green-strong);
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: var(--green);
 }
 
 @layer base {
@@ -128,6 +228,17 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    /* pretty prose: fewer orphans in paragraphs across the app */
+    text-wrap: pretty;
+  }
+  /* balance keeps short headings visually even (no lonely last word). */
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  /* Galindo is decorative — ration it. Only h1 opts in automatically;
+     reach for `font-display` by hand elsewhere (hero, logo, big numbers). */
+  h1 {
+    @apply font-display;
   }
 }

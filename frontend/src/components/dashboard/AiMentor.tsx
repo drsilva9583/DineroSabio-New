@@ -79,7 +79,7 @@ export default function AiMentor({ language = "en" }: Props) {
     <>
       <div className="fixed bottom-4 right-4 z-50">
         {!open && (<button
-          className="bg-theme-green text-white p-3 rounded-full shadow-lg hover:bg-theme-green-dark focus:outline-none focus:ring-theme-green flex items-center gap-2"
+          className="bg-green text-surface p-3 rounded-full shadow-lg hover:bg-green-strong focus:outline-none focus:ring focus:ring-green transition-colors flex items-center gap-2"
           onClick={() => setOpen(!open)}
         >
           <MessageSquareMore strokeWidth={2.25} />
@@ -87,25 +87,29 @@ export default function AiMentor({ language = "en" }: Props) {
         </button>
         )}
         {open && (
-          <div className="w-80 rounded-lg bg-gray-400 p-4 shadow-lg dark:bg-gray-800">
+          <div className="w-80 rounded-2xl border border-border bg-surface p-4 shadow-lg">
             <div className="mb-2 flex flex-col justify-between">
               {/* Add a header with a title and a close button */}
               <div className="flex justify-between gap-2">
-                <h3 className="font-bold">AI Mentor</h3>
+                <h3 className="font-bold text-ink">AI Mentor</h3>
                 <button
-                  className="text-md text-gray-600 dark:text-gray-400"
+                  className="text-md text-ink-soft hover:text-ink transition-colors"
                   onClick={() => setOpen(false)}
                 >
                   <X />
                 </button>
               </div>
               {/* Add a scrollable area for messages */}
-              <div className="mt-2 h-64 overflow-y-auto rounded-lg bg-gray-200 p-2 dark:bg-gray-700">
-                <div>
+              <div className="mt-2 h-64 overflow-y-auto rounded-lg bg-cream p-2">
+                <div className="flex flex-col gap-2">
                   {messages.map((message, index) => (
                     <div
                       key={index}
-                      className={message.role === "user" ? "text-right" : "text-left"}
+                      className={
+                        message.role === "user"
+                          ? "self-end rounded-2xl rounded-br-sm bg-green px-3 py-1.5 text-surface"
+                          : "self-start rounded-2xl rounded-bl-sm bg-surface-sunken px-3 py-1.5 text-ink"
+                      }
                     >
                       {message.content}
                     </div>
@@ -124,11 +128,11 @@ export default function AiMentor({ language = "en" }: Props) {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Type your message..."
-                    className="w-full rounded-lg border border-gray-300 p-2 focus:border-theme-green focus:ring focus:ring-theme-green focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                    className="w-full rounded-lg border border-border bg-cream p-2 text-ink placeholder:text-ink-soft focus:border-green focus:ring focus:ring-green focus:ring-opacity-50"
                   />
                   <button
                     type="submit"
-                    className="mt-2 w-full rounded-lg bg-theme-green p-2 text-white hover:bg-theme-green-dark focus:outline-none focus:ring focus:ring-theme-green focus:ring-opacity-50 disabled:bg-gray-500 disabled:cursor-not-allowed"
+                    className="mt-2 w-full rounded-lg bg-green p-2 font-semibold text-surface transition-colors hover:bg-green-strong focus:outline-none focus:ring focus:ring-green disabled:cursor-not-allowed disabled:bg-ink-soft/40"
                     disabled={isStreaming || input.trim() === ""}
                   >
                     {isStreaming ? "Streaming..." : "Send"}
