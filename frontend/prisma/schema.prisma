@@ -21,7 +21,7 @@ model User {
 }
 
 // ─── EdTech Engine ───────────────────────────────────────────────────────────
-
+// AKA Modules
 model Course {
   id                    Int      @id @default(autoincrement())
   courseTitle           String
@@ -41,6 +41,7 @@ model Lesson {
   lessonContent    String
   lessonContent_es String
   courseId         Int?
+  currencyReward   Int                   @default(1000) // mock currency awarded when user completes this lesson
   courses          Course?               @relation(fields: [courseId], references: [id])
   quizzes          Quiz[]
   tips             Tip[]
@@ -57,7 +58,6 @@ model Quiz {
   options_es       String[]
   correctAnswer    String
   correctAnswer_es String
-  currencyReward   Int     @default(500) // mock currency awarded when user passes this quiz
   lessonId         Int?
   lesson           Lesson? @relation(fields: [lessonId], references: [id])
 }

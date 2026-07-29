@@ -1,6 +1,6 @@
 import { PrismaClient } from '../src/generated/prisma';
 import { PrismaPg } from '@prisma/adapter-pg'
-import pg from '../node_modules/@types/pg';
+import pg from 'pg';
 
 const connectionString = process.env.DATABASE_URL as string;
 const pool = new pg.Pool({ connectionString });
@@ -22,17 +22,25 @@ async function main() {
     const newUser = await prisma.user.upsert({
         where: { email: 'alice@prisma.io' },
         update: {},
-        create: { 
+        create: {
             email: 'alice@prisma.io',
             name: 'Alice',
         }
     });
     console.log(`Upserted user: ${newUser.name} (${newUser.email})`);
 
-    const course1 = await prisma.course.upsert({
-            where: { id: 1 },
-            update: {},
-            create: {
+    // Wipe EdTech content in FK-safe order (children before parents) so the seed
+    // is idempotent: re-running always reflects the current create blocks below.
+    await prisma.quiz.deleteMany();
+    await prisma.tip.deleteMany();
+    await prisma.calculator.deleteMany();
+    await prisma.example.deleteMany();
+    await prisma.userLessonProgress.deleteMany();
+    await prisma.lesson.deleteMany();
+    await prisma.course.deleteMany();
+
+    const course1 = await prisma.course.create({
+            data: {
                 courseTitle: 'Introduction to Saving',
                 courseTitle_es: 'Introducción al Ahorro',
                 courseDescription: 'Learn the basics of saving money effectively.',
@@ -124,10 +132,8 @@ async function main() {
     });
     console.log(`Upserted course1: ${course1.courseTitle}`);
 
-    const course2 = await prisma.course.upsert({
-        where: { id: 2 },
-        update: {},
-        create: {
+    const course2 = await prisma.course.create({
+        data: {
             courseTitle: 'Basics of Investing',
             courseTitle_es: 'Conceptos Básicos de Inversión',
             courseDescription: 'An introductory course on investing in stocks and bonds.',

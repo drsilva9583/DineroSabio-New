@@ -115,6 +115,13 @@ docker compose up                   # Everything including ai-service container
 docker compose down                 # Stop all
 ```
 
+### Migration Gotchas (learned the hard way)
+
+- **Always use `migrate dev` for schema changes — never `db push`.** `db push` mutates the DB without writing a migration file, so the migration history silently falls behind. The next `migrate dev`/`reset` replays only on-disk migrations and *drops every `db push`-only column* (this is how we lost `mockBalance`, `clerkId`, and the Trading models on a reset).
+- **Prisma 7: connection URLs live only in `prisma.config.ts`, not `schema.prisma`.** `url` is banned in the schema datasource block; the app connects via the pg `adapter` passed to `PrismaClient`.
+- **Migrations must use a DIRECT (non-pooled) Neon connection.** The pooler (`...-pooler...` host) breaks Prisma's session-scoped `pg_advisory_lock` → `P1002` timeout. Fix: `prisma.config.ts` `datasource.url = env("DIRECT_URL")` (host with `-pooler` removed); the app keeps using pooled `DATABASE_URL` through the adapter. `DIRECT_URL` lives in `frontend/.env`.
+- **Seed imports the runtime `pg` package (`import pg from 'pg'`), never `@types/pg`** — the `@types/*` package is type-only and has zero runtime code.
+
 ---
 
 ## Architecture Patterns
