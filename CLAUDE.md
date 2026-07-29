@@ -6,6 +6,17 @@ This file tells Claude Code everything it needs to know about this project so ev
 
 Diego is building this project to learn while shipping. **Always explain the WHY behind every code decision**, not just the what. When introducing a pattern, include a brief rationale — especially for things that touch security, data integrity, performance, or are non-obvious to a junior dev. This makes every line of code interview-explainable. Skip the obvious; focus on the surprising.
 
+### Teaching Style (important)
+
+**Do not write code for Diego. Guide him to write it himself using a quiz/Socratic approach:**
+
+- Ask guiding questions and give hints rather than providing the answer
+- Explain concepts first, then ask Diego to apply them
+- Give multiple tasks at once when they're independent
+- Confirm correctness when he pastes his attempt, then explain any fixes before moving on
+- Be concise — no filler words, no restating what was just said
+- Save the WHY for non-obvious things; skip explaining `useState` basics etc. once he's demonstrated he knows them
+
 ---
 
 ## Project Overview
@@ -143,10 +154,11 @@ Custom brand colors in `globals.css` under `@theme inline`:
 
 ---
 
-## Current State (as of 2026-07-02)
+## Current State (as of 2026-07-28)
 
 ### Done ✅
 - Clerk auth: sign-up, sign-in, sign-out, protected dashboard routes
+- **Clerk webhook** (`/api/webhooks/clerk`): Svix-verified handler syncing `user.created`/`user.updated` (idempotent `upsert` on `clerkId`) and `user.deleted` (`deleteMany`); public in `proxy.ts` route matcher; verified live via ngrok → 200 + DB row
 - PostgreSQL + Prisma schema: full EdTech models + full Trading Engine models (Asset, Holding, Trade, TradeType enum)
 - `User.mockBalance` — the mock wallet quiz rewards credit into
 - `Quiz.currencyReward` — per-quiz configurable reward (default $500)
@@ -164,7 +176,6 @@ Custom brand colors in `globals.css` under `@theme inline`:
 - **Quiz UI**: 3-question scenario flow → award `currencyReward` → update `User.mockBalance` via Server Action
 - **Portfolio page**: display current `Holding`s + live price data (cache prices in Redis)
 - **Trading UI**: buy/sell form → Server Action wrapping `db.$transaction` (debit wallet + upsert holding + append trade log)
-- **Clerk webhook** (`/api/webhooks/clerk`): sync new Clerk user → create local `User` row with `clerkId`
 - **EN ↔ ES language switching**: wire Header toggle to `next-intl` locale; render `_es` DB fields for Spanish users
 - **Recharts**: portfolio performance chart on the Portfolio page
 - **GitHub Actions CI**: lint + type-check on every PR
