@@ -1,5 +1,4 @@
-# Claude Code skills
-.claude/skills/
+# Claude Code — commit shared config/skills; ignore only personal-local settings
 .claude/settings.local.json
 
 # GitHub-scoped skills

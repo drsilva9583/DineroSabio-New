@@ -1,6 +1,6 @@
-# /commit — Smart Commit Assistant
+# /commit — Smart Commit Message Assistant
 
-Review staged changes for secrets, draft a conventional commit message, and commit.
+Review staged changes for secrets and draft a conventional commit message. **Does NOT run the commit** — it only hands you the message to use yourself.
 
 ## Steps
 
@@ -19,7 +19,7 @@ Run `git diff --cached` and scan the output for patterns that look like secrets:
 
 If a pattern matches, show the matching line(s), explain why it looks like a secret, and ask the user to confirm before continuing. Do NOT silently skip secrets.
 
-### 3. Draft a commit message
+### 3. Draft the commit message
 
 Analyze `git diff --cached` and write a commit message following Conventional Commits:
 
@@ -39,19 +39,9 @@ Analyze `git diff --cached` and write a commit message following Conventional Co
 - Never mention file names in the summary line; save them for bullets if needed
 - If the diff is a rename/restructure with no logic change, use `chore:`
 
-Show the drafted message to the user and ask: **"Commit with this message? (yes / edit / cancel)"**
+### 4. Hand off the message
 
-### 4. Commit
-
-If the user says **yes**: run `git commit -m "<message>"` with the exact drafted message.
-
-If the user says **edit**: show the message in a code block and let them paste a corrected version, then commit with their version.
-
-If the user says **cancel**: stop without committing.
-
-### 5. Confirm
-
-After a successful commit, run `git log --oneline -1` and show the user the commit hash + message so they can confirm it landed.
+Present the drafted message in a code block so it's easy to copy. **Do not run `git commit`** — the user commits it themselves. You may show the ready-to-run command (e.g. ``git commit -m "..."``) for convenience, but do not execute it.
 
 ---
 
