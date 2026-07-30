@@ -4,6 +4,28 @@ Review these before interviews. Newest first.
 
 ---
 
+## 2026-07-30 — Quiz UI Client Component + Lesson Page
+
+**Built:**
+- [Quiz.tsx](frontend/src/components/dashboard/Quiz.tsx): two-step quiz flow, 5/5 gate, `useEffect`-driven reward call reading `{ awarded, amount }`.
+- [lesson page.tsx](frontend/src/app/dashboard/courses/[courseId]/lessons/[lessonId]/page.tsx): single `findUnique` + `include: quizzes`, empty-quiz guard, mounts `<Quiz>`.
+- Made course-page lessons `<Link>`s into the new lesson route.
+
+**Review:**
+- Handlers set state; effects react to it — never decide from a state value just set in the same function (stale snapshot).
+- Effect re-runs only when a dep *changes* — `true→true` is skipped; watch the value that always changes (`score`), not `isCorrect`.
+- Three Prisma artifacts must agree: schema, DB, generated client — "column does not exist" + clean `migrate status` = stale client → `prisma generate`.
+- Reward security: client scores, but server's `@@unique` + P2002 catch is the real invariant (no double-pay); empty quiz would auto-award without a guard.
+
+**Q&A — questions I was asked:**
+- **Q:** What stops a user calling `awardLessonReward` without taking the quiz? → **A:** Nothing (client scores), but `@@unique([userId,lessonId])` caps it to one payment — acceptable for fake-money MVP.
+- **Q:** Is `correctAnswer` React state? → **A:** No — it's in the Quiz row props; derive it, don't store it.
+- **Q:** Why not put `isCorrect` in the effect deps? → **A:** It can stay `true` across questions; the unchanged value skips the effect. Watch `score`.
+- **Q:** Why `(async()=>{})()` inside the effect instead of an async effect callback? → **A:** An effect must return void/cleanup; an async fn always returns a Promise.
+- **Q:** Column-missing error but migrations up to date — cause? → **A:** Stale generated client (first guessed the seed — wrong; seed only inserts rows).
+
+---
+
 ## 2026-07-29 — Quiz Reward Server Action + Migration Fixes
 
 **Built:**
