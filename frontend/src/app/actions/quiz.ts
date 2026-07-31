@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { Prisma } from "../../../src/generated/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function awardLessonReward(lessonId: number) {
     const { userId } = await auth();
@@ -50,6 +51,7 @@ export async function awardLessonReward(lessonId: number) {
                 })
             ]
         );
+        revalidatePath("/dashboard");
         return { awarded: true, message: "Reward awarded successfully" };
     }
     catch (error) {

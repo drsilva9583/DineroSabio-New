@@ -23,6 +23,28 @@ export default function Quiz({ language = "en", questions, lessonId }: Props) {
     const correctAnswer = language === "en" ? currentQuestion.correctAnswer : currentQuestion.correctAnswer_es;
     const passed = score === questions.length;
 
+    function shuffle<T>(array: T[]): T[] {
+        const shuffledArray = [...array];
+        for (let i = shuffledArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+        }
+        return shuffledArray;
+    }
+
+    // Shuffle options client-side only. Running the shuffle during render (or in
+    // useMemo) would call Math.random() during SSR and again on hydration, giving
+    // the server and client different orders -> hydration mismatch. An effect never
+    // runs on the server, so the initial render uses the raw order on both sides,
+    // then we re-shuffle after mount.
+    const [displayedOptions, setDisplayedOptions] = useState<string[]>(
+        language === "en" ? currentQuestion.options : currentQuestion.options_es
+    );
+
+    useEffect(() => {
+        setDisplayedOptions(shuffle(language === "en" ? currentQuestion.options : currentQuestion.options_es));
+    }, [currentQuestion, language]);
+
     const handleSubmitAnswer = async () => {
         if (selectedOption === null) {
             setError("Please select an option before submitting.");
@@ -95,9 +117,19 @@ export default function Quiz({ language = "en", questions, lessonId }: Props) {
                                         <p>Awarding reward...</p>
                                     ) : receivedReward ? (
                                         <p>Congratulations! You have earned the reward for completing this lesson.</p>
+
                                     ) : (
                                         <p>Reward not granted. You may have already completed this lesson.</p>
                                     )}
+                                    <h2>Correct Answers</h2>
+                                            <ul>
+                                                {questions.map((question) => (
+                                                    <li key={question.id}>
+                                                        {language === "en" ? question.question : question.question_es}
+                                                        <p>Correct answer: {language === "en" ? question.correctAnswer : question.correctAnswer_es}</p>
+                                                    </li>
+                                                ))}
+                                            </ul>
                                 </div>
                             )}
                         </div>
@@ -107,7 +139,7 @@ export default function Quiz({ language = "en", questions, lessonId }: Props) {
                     <div>
                         <h2>{language === "en" ? currentQuestion.question : currentQuestion.question_es}</h2>
                         <ul>
-                            {(language === "en" ? currentQuestion.options : currentQuestion.options_es).map((option) => (
+                            {displayedOptions.map((option) => (
                                 <li key={option}>
                                     <button onClick={() => setSelectedOption(option)}>
                                         {selectedOption === option ? <strong>{option}</strong> : option}

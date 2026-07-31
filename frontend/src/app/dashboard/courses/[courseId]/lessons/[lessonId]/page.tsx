@@ -1,15 +1,17 @@
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Quiz from "@/components/dashboard/Quiz";
+import Link from "next/link";
 
 interface Props {
     params: Promise<{ courseId: string, lessonId: string }>;
 }
 
 export default async function LessonDetailPage({ params }: Props) {
-    const { lessonId: lessonIdStr } = await params;
+    const { lessonId: lessonIdStr, courseId: courseIdStr } = await params;
     const lessonId = Number(lessonIdStr);
-    if (Number.isNaN(lessonId)) {
+    const courseId = Number(courseIdStr);
+    if (Number.isNaN(lessonId) || Number.isNaN(courseId)) {
         return notFound();
     }
 
@@ -25,6 +27,9 @@ export default async function LessonDetailPage({ params }: Props) {
 
     return (
         <main className="p-6">
+            <Link href={`/dashboard/courses/${courseId}`}>
+                <button className="mb-4">&lt;&lt; Back to Course</button>
+            </Link>
             <h1 className="text-3xl mb-4 text-ink">{lesson.lessonTitle}</h1>
             <p className="mt-1">
                 {lesson.lessonContent}
@@ -33,7 +38,7 @@ export default async function LessonDetailPage({ params }: Props) {
                 {lesson.quizzes.length === 0 ? (
                     <p>No quizzes available for this lesson.</p>
                 ) : (
-                    <Quiz questions={lesson.quizzes} lessonId={lessonId} />
+                    <Quiz questions={lesson.quizzes} lessonId={lessonId}/>
                 )}
             </div>
         </main>

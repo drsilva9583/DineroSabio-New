@@ -168,7 +168,7 @@ Custom brand colors in `globals.css` under `@theme inline`:
 - **Clerk webhook** (`/api/webhooks/clerk`): Svix-verified handler syncing `user.created`/`user.updated` (idempotent `upsert` on `clerkId`) and `user.deleted` (`deleteMany`); public in `proxy.ts` route matcher; verified live via ngrok → 200 + DB row
 - PostgreSQL + Prisma schema: full EdTech models + full Trading Engine models (Asset, Holding, Trade, TradeType enum)
 - `User.mockBalance` — the mock wallet quiz rewards credit into
-- `Quiz.currencyReward` — per-quiz configurable reward (default $500)
+- `Lesson.currencyReward` — per-lesson configurable reward (default $1000; reward is granted on lesson completion, not per quiz)
 - `User.clerkId` — links local DB user to the Clerk auth user (needed for webhook)
 - Dashboard course grid with color-coded difficulty/time/lesson-count badges
 - Course detail page: renders title + lesson list
@@ -180,7 +180,7 @@ Custom brand colors in `globals.css` under `@theme inline`:
 
 ### Planned 📋
 - **AiMentor component**: floating chat drawer, streaming fetch, blinking cursor
-- **Quiz UI**: 3-question scenario flow → award `currencyReward` → update `User.mockBalance` via Server Action
+- **Quiz UI**: 5-question scenario flow (5/5 required) → award `Lesson.currencyReward` → update `User.mockBalance` via Server Action
 - **Portfolio page**: display current `Holding`s + live price data (cache prices in Redis)
 - **Trading UI**: buy/sell form → Server Action wrapping `db.$transaction` (debit wallet + upsert holding + append trade log)
 - **EN ↔ ES language switching**: wire Header toggle to `next-intl` locale; render `_es` DB fields for Spanish users

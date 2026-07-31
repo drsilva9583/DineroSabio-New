@@ -78,6 +78,16 @@
   --color-mediumyellow: var(--amber-tint);
   --color-hardred: var(--red-tint);
 
+  /* -- Backward-compat aliases -------------------------------------- *
+   * Old components reference these class names. Re-pointing them at the
+   * new palette repaints the app instantly. Migrate components onto the
+   * canonical tokens (green / surface / ink) over time, then delete these. */
+  --color-dashboard-bg: var(--green);
+  --color-dashboard-bg-dark: var(--green-strong);
+  --color-theme-green: var(--green);
+  --color-theme-green-dark: var(--green-strong);
+  --color-text-gray: var(--ink-soft);
+
   /* -- Radius scale --------------------------------------------- */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -99,8 +109,8 @@
   /* neutrals / surfaces */
   --cream: #FFF6DA;                       /* your background            */
   --surface: #FFFBF0;                     /* your lighter bg (navbar)    */
-  --surface-sunken: oklch(0.945 0.036 96);/* one step under cream        */
-  --ink: oklch(0.22 0.012 80);            /* warm near-black (not pure #000 — softer on cream, still ~13:1) */
+  --surface-sunken: #f4edd2;/* one step under cream        */
+  --ink: #1e1a14;            /* warm near-black (not pure #000 — softer on cream, still ~13:1) */
   --ink-soft: #5F5F5F;                    /* your secondary gray (~5.9:1)*/
 
   /* brand — green */

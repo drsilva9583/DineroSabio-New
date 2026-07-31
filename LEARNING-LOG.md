@@ -4,6 +4,51 @@ Review these before interviews. Newest first.
 
 ---
 
+## 2026-07-31 — Review Screen + Options Shuffle
+
+**Built:**
+- [Quiz.tsx](frontend/src/components/dashboard/Quiz.tsx): review list on a 5/5 run — pure render off `questions`, no new state.
+- DRY'd the review list to one copy after the message ternary (was duplicated in two passed-branches).
+- Added Fisher–Yates `shuffle`; moved it from `useMemo` to `useState` + `useEffect` to kill a hydration mismatch.
+
+**Review:**
+- On a perfect run, selected answer == `correctAnswer` for all — so review needs no tracked-picks state.
+- `useMemo` runs on BOTH server and client; its cache doesn't cross the boundary — can't stabilize `Math.random()`.
+- Effects never run during SSR: render raw order on both sides, then shuffle client-only after mount.
+- `arr.sort(() => Math.random()-0.5)` is a biased shuffle; Fisher–Yates is uniform.
+- Duplicated JSX is a maintenance hazard — future tweaks must be made twice or they drift.
+
+**Q&A — questions I was asked:**
+- **Q:** Does the review screen need new state for the user's picks? → **A:** No — on a 5/5 the picks equal `correctAnswer`; render off `questions`.
+- **Q:** Where should the shuffle live — seed or component? → **A:** Component, for per-session variety; seed shuffle freezes one order forever.
+- **Q:** Why did `useMemo` still cause a hydration error? → **A:** It runs on server and client separately; `Math.random()` differs, memo doesn't transfer.
+- **Q:** How do you make client-only randomness safe for SSR? → **A:** Shuffle in `useEffect` (never runs on server), seed state with the raw order.
+
+---
+
+## 2026-07-31 — Seed Content + Navbar Balance
+
+**Built:**
+- [seed.ts](frontend/prisma/seed.ts): data-driven rewrite — 3 courses × 3 lessons × 5 questions, 4 options each, 10 trading assets.
+- Added a `validate()` guard that throws pre-insert if any quiz breaks the winnable invariant (5 Qs, 4 unique options, `correctAnswer` ∈ options, both langs).
+- [Header.tsx](frontend/src/components/dashboard/Header.tsx): server-side reads `mockBalance` via `clerkId`, formats with `Intl.NumberFormat`.
+- [quiz.ts](frontend/src/app/actions/quiz.ts): `revalidatePath("/dashboard")` after the transaction so the balance refreshes with no reload.
+
+**Review:**
+- Prisma `Decimal` returns a Decimal.js *object*, not a JS number — `Number()` it, then `Intl.NumberFormat` for `$1,000.00`.
+- `revalidatePath` inside a Server Action re-renders the *current* route tree (incl. shared layouts) client-side — no full reload.
+- A Server Component can query Prisma directly; a Client Component can't — read where you render only if it's server-side.
+- Seed invariants worth failing loud: a typo making `correctAnswer` ∉ options yields a silently unwinnable quiz.
+
+**Q&A — questions I was asked:**
+- **Q:** Read balance in Header or layout? → **A:** Header works *because* it's an async Server Component; else you'd pass it as a prop.
+- **Q:** After the reward mutates the DB, why doesn't the header update? → **A:** Next caches rendered RSC; `revalidatePath` marks it stale to re-render.
+- **Q:** `.toFixed()` to format the balance? → **A:** Works but no `$`/commas, and it's a Decimal object — use `Intl.NumberFormat(Number(x))`.
+- **Q:** For the review screen on a 5/5 run, do you need new state for the user's picks? → **A:** No — on a perfect run selected == `correctAnswer`; render off `questions`.
+- **Q:** "User not found" on quiz completion — cause? → **A:** No DB row with that `clerkId`; only the Clerk webhook creates users, not signing in.
+
+---
+
 ## 2026-07-30 — Quiz UI Client Component + Lesson Page
 
 **Built:**
