@@ -10,6 +10,10 @@ coverage/
 .next/
 out/
 build/
+next-env.d.ts
+
+# TypeScript build cache
+*.tsbuildinfo
 
 # Environment variables
 .env

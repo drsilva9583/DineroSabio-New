@@ -4,6 +4,31 @@ Review these before interviews. Newest first.
 
 ---
 
+## 2026-08-03 — Trading Engine Server Actions
+
+**Built:**
+- `Asset.currentPrice` (Decimal 12,2) + migration; seeded prices for all 10 assets.
+- [trading.ts](frontend/src/app/actions/trading.ts): `buyAsset(assetId, amountInDollars)` and `sellAsset(assetId, shares)`.
+- Overdraft guard moved into the WHERE: `updateMany` + `gte` + `count === 0` check.
+- CHECK constraints via hand-written migration: `mockBalance >= 0`, `Holding.shares >= 0`.
+
+**Review:**
+- Atomic `decrement` prevents lost updates, NOT overdraft — the stale app-level check is the TOCTOU gap.
+- `$transaction([])` can't branch; interactive form needed, and rollback = `throw` (use `tx`, never `db`).
+- Buy stores `totalValue` = exact dollars debited; recomputed `shares × price` would stop the ledger reconciling.
+- Sell derives proceeds, so round explicitly `ROUND_DOWN` — Postgres rounds half-up and leaks money every sale.
+- `Decimal` is a class instance: won't survive Server Action serialization — return money as strings.
+
+**Q&A — questions I was asked:**
+- **Q:** Const price map or a `currentPrice` column? → **A:** Column — a live API later would put network I/O inside the transaction.
+- **Q:** Buy by shares or dollars? → **A:** Dollars; users know their balance, not share counts. Sell by shares/percent.
+- **Q:** Does atomic `decrement` prevent the -$600 overdraft? → **A:** No (my misconception) — the *check* was still a stale read outside the write.
+- **Q:** Which method takes a non-unique `where`? → **A:** `updateMany`; it returns `{ count }` instead of throwing P2025.
+- **Q:** `upsert` on the sell path? → **A:** No — `create` would invent a position the user never bought. Use `updateMany`.
+- **Q:** Why a migration file instead of running the ALTER in the Neon console? → **A:** `migrate reset` replays only on-disk migrations; out-of-band DDL silently vanishes.
+
+---
+
 ## 2026-07-31 — Review Screen + Options Shuffle
 
 **Built:**

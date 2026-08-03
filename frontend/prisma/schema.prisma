@@ -109,6 +109,7 @@ model Asset {
   ticker   String    @unique // e.g. "VOO", "AAPL"
   name     String            // e.g. "Vanguard S&P 500 ETF"
   name_es  String            // Spanish display name
+  currentPrice Decimal  @default(0) @db.Decimal(12, 2) // current market price per share
   holdings Holding[]
   trades   Trade[]
 }

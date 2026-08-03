@@ -636,16 +636,16 @@ const courses: CourseSeed[] = [
 // ─── The 10 curated trading assets ───────────────────────────────────────────
 // Seeded, never user-created. Ready for the Trading engine.
 const assets = [
-    { ticker: 'VOO', name: 'Vanguard S&P 500 ETF', name_es: 'ETF Vanguard S&P 500' },
-    { ticker: 'VTI', name: 'Vanguard Total Stock Market ETF', name_es: 'ETF Vanguard Mercado Total' },
-    { ticker: 'BND', name: 'Vanguard Total Bond Market ETF', name_es: 'ETF Vanguard Mercado Total de Bonos' },
-    { ticker: 'AAPL', name: 'Apple Inc.', name_es: 'Apple Inc.' },
-    { ticker: 'MSFT', name: 'Microsoft Corporation', name_es: 'Microsoft Corporation' },
-    { ticker: 'AMZN', name: 'Amazon.com, Inc.', name_es: 'Amazon.com, Inc.' },
-    { ticker: 'GOOGL', name: 'Alphabet Inc.', name_es: 'Alphabet Inc.' },
-    { ticker: 'NVDA', name: 'NVIDIA Corporation', name_es: 'NVIDIA Corporation' },
-    { ticker: 'TSLA', name: 'Tesla, Inc.', name_es: 'Tesla, Inc.' },
-    { ticker: 'JNJ', name: 'Johnson & Johnson', name_es: 'Johnson & Johnson' },
+    { ticker: 'VOO', name: 'Vanguard S&P 500 ETF', name_es: 'ETF Vanguard S&P 500', currentPrice: 400.00 },
+    { ticker: 'VTI', name: 'Vanguard Total Stock Market ETF', name_es: 'ETF Vanguard Mercado Total', currentPrice: 70.00 },
+    { ticker: 'BND', name: 'Vanguard Total Bond Market ETF', name_es: 'ETF Vanguard Mercado Total de Bonos', currentPrice: 50.00 },
+    { ticker: 'AAPL', name: 'Apple Inc.', name_es: 'Apple Inc.', currentPrice: 150.00 },
+    { ticker: 'MSFT', name: 'Microsoft Corporation', name_es: 'Microsoft Corporation', currentPrice: 300.00 },
+    { ticker: 'AMZN', name: 'Amazon.com, Inc.', name_es: 'Amazon.com, Inc.', currentPrice: 100.00 },
+    { ticker: 'GOOGL', name: 'Alphabet Inc.', name_es: 'Alphabet Inc.', currentPrice: 250.00 },
+    { ticker: 'NVDA', name: 'NVIDIA Corporation', name_es: 'NVIDIA Corporation', currentPrice: 800.00 },
+    { ticker: 'TSLA', name: 'Tesla, Inc.', name_es: 'Tesla, Inc.', currentPrice: 700.00 },
+    { ticker: 'JNJ', name: 'Johnson & Johnson', name_es: 'Johnson & Johnson', currentPrice: 160.00 },
 ];
 
 // ─── Validation ──────────────────────────────────────────────────────────────
@@ -738,7 +738,7 @@ async function main() {
     for (const asset of assets) {
         await prisma.asset.upsert({
             where: { ticker: asset.ticker },
-            update: { name: asset.name, name_es: asset.name_es },
+            update: { name: asset.name, name_es: asset.name_es, currentPrice: asset.currentPrice },
             create: asset,
         });
     }
