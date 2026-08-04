@@ -161,7 +161,7 @@ Custom brand colors in `globals.css` under `@theme inline`:
 
 ---
 
-## Current State (as of 2026-07-28)
+## Current State (as of 2026-08-04)
 
 ### Done ✅
 - Clerk auth: sign-up, sign-in, sign-out, protected dashboard routes
@@ -172,17 +172,34 @@ Custom brand colors in `globals.css` under `@theme inline`:
 - `User.clerkId` — links local DB user to the Clerk auth user (needed for webhook)
 - Dashboard course grid with color-coded difficulty/time/lesson-count badges
 - Course detail page: renders title + lesson list
+- **Quiz flow**: 5-question scenario quiz → `awardLessonReward` Server Action (session-derived identity, DB-level replay protection, atomic payout) → review screen
+- **Trading engine (server)** — `src/app/actions/trading.ts`:
+  - `Asset.currentPrice` (`Decimal(12,2)`), seeded for all 10 assets. It is a **cache** — a live price API + Redis refresh job comes later, so no network I/O ever happens inside a transaction.
+  - `buyAsset(assetId, amountInDollars)` — buy in dollars
+  - `sellAsset(assetId, shares)` — sell an explicit share count
+  - `sellAssetPercent(assetId, 50 | 100)` — resolves the share count from the `Holding` row *inside* the transaction
+  - `executeSell(tx, userId, assetId, shares, price)` — private shared body of every sell
+  - CHECK constraints in the migration: `User.mockBalance >= 0`, `Holding.shares >= 0`
+  - Smoke-tested end to end; the `Trade` ledger reconciles against `mockBalance` to the cent
+- **Portfolio page** (`/dashboard/portfolio`) — the buy *and* sell surface. Server Component fetches assets + the session user's holdings; `AssetCard` Client Component owns per-card input state, `useTransition` pending state, and auto-clearing result messages.
 - FastAPI AI service scaffold: POST `/api/chat` streaming endpoint with EN/ES system prompts
 - Docker Compose: Postgres + Redis + ai-service
 
 ### In Progress 🔨
-- AiMentor Client Component (`components/dashboard/AiMentor.tsx`) — building next
+- **AiMentor Client Component** (`components/dashboard/AiMentor.tsx`) — drawer, streaming fetch, and message rendering all work. Remaining before this moves to Done:
+  - 🔴 **`decoder.decode(value, { stream: true })`** — currently missing the `stream` flag. Chunks are split on arbitrary *byte* boundaries, and `á é í ó ú ñ ¿ ¡` are 2-byte UTF-8, so a boundary landing mid-character emits `` instead. `{ stream: true }` buffers the trailing incomplete bytes for the next chunk. Rare in English, constant in Spanish — this breaks half the product.
+  - 🟠 **Surface errors in the UI** — the `catch` only calls `console.error`, so when the FastAPI service isn't running (most of the time in dev, it's a separate process) the input just clears and nothing happens. Needs an error state in the drawer, worded for a non-technical user, not "Network response was not ok".
+  - 🟡 **Blinking cursor** — spec'd under Streaming Pattern below but never built. Between Send and the first token the drawer is static, which reads as a hang. Render a blinking `<span>` while `isStreaming === true` and the last message's role is `"assistant"`.
+  - **Empty state** — first open shows a blank gray box. A greeting + 2–3 tappable example questions matters a lot for the low-digital-literacy audience.
+  - **`sendMessage` guards `input.trim()` but takes a `message` param** — same value today, so the bug is dormant rather than absent. Guard the parameter.
+  - **`AbortController`** — closing the drawer mid-stream leaves the fetch running and still calling `setMessages`; burns Anthropic tokens for a response nobody reads.
+  - **Accessibility** — the close button is an icon with no accessible name (`aria-label`); the message list should be `role="log"` + `aria-live="polite"`.
+  - **Known gap, blocked:** the `language` prop is never passed — `dashboard/layout.tsx` renders `<AiMentor />` bare, so it always defaults to `"en"` and the FastAPI Spanish system prompt is unreachable. Unblocks with the `next-intl` locale work below.
 
 ### Planned 📋
+- **Gain/loss on the portfolio page**: `Holding` stores only `shares`, so cost basis has to be derived from the `Trade` ledger — query design not started
+- **Live prices**: fetch real quotes into `Asset.currentPrice` from a separate refresh job, cached in Redis with a TTL
 - **AiMentor component**: floating chat drawer, streaming fetch, blinking cursor
-- **Quiz UI**: 5-question scenario flow (5/5 required) → award `Lesson.currencyReward` → update `User.mockBalance` via Server Action
-- **Portfolio page**: display current `Holding`s + live price data (cache prices in Redis)
-- **Trading UI**: buy/sell form → Server Action wrapping `db.$transaction` (debit wallet + upsert holding + append trade log)
 - **EN ↔ ES language switching**: wire Header toggle to `next-intl` locale; render `_es` DB fields for Spanish users
 - **Recharts**: portfolio performance chart on the Portfolio page
 - **GitHub Actions CI**: lint + type-check on every PR

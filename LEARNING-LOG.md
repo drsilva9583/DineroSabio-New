@@ -4,6 +4,31 @@ Review these before interviews. Newest first.
 
 ---
 
+## 2026-08-04 — Trading UI + Server/Client Boundary
+
+**Built:**
+- Smoke-tested buy/sell end to end; Trade ledger reconciles against `mockBalance` to the cent.
+- [portfolio/page.tsx](frontend/src/app/dashboard/portfolio/page.tsx) + [AssetCard.tsx](frontend/src/components/dashboard/AssetCard.tsx): buy/sell surface, per-card state.
+- Fixed a data leak: `db.holding.findMany()` had no `where: { userId }` — returned every user's positions.
+- Added `sellAssetPercent` + private `executeSell(tx, ...)` helper shared by both sell paths.
+
+**Review:**
+- Prisma `Decimal` is a class instance; can't cross Server→Client. Pass money as `string`, never `number`.
+- Two ways to close a TOCTOU gap: eliminate the read (guard in WHERE), or enclose it (read inside the transaction).
+- "Sell 100%" must pass the stored Decimal untouched — any arithmetic leaves a dust position `deleteMany` can't clear.
+- `revalidatePath("/dashboard")` defaults to `type: "page"`; nested routes need `"layout"`.
+- Every export in a `"use server"` file is a public endpoint — helpers taking raw `userId` must stay unexported.
+
+**Q&A — questions I was asked:**
+- **Q:** Can you call a Server Action from a plain script? → **A:** No — `auth()` reads the request context, which only exists in a real request.
+- **Q:** `string` or `number` for `currentPrice` across the boundary? → **A:** `string`. I picked `number`; the type is a guardrail against future float math, not just today's display.
+- **Q:** One `useState` in the parent for all ten inputs? → **A:** No — I traced the click, not the keystroke. All ten inputs read one variable and show the same value.
+- **Q:** Does the WHERE guard stop a double-click double-buy? → **A:** No, and it doesn't need to — both buys are valid. It's UX; fix with `isPending`.
+- **Q:** Why read the Holding inside the transaction? → **A:** A concurrent buy between read and write makes "sell all" leave shares behind.
+- **Q:** Delegate `sellAssetPercent` to `sellAsset`? → **A:** No — its `number` param destroys the exact Decimal at the boundary you're protecting.
+
+---
+
 ## 2026-08-03 — Trading Engine Server Actions
 
 **Built:**

@@ -28,7 +28,7 @@ export default async function DashboardHeader() {
             <div className="hidden sm:flex">
                 <nav className="flex gap-8 ml-10">
                     <Link href="/dashboard" className="text-lg text-ink-soft hover:text-ink hover:underline">Courses</Link>
-                    <Link href="#" className="text-lg text-ink-soft hover:text-ink hover:underline">Portfolio</Link>
+                    <Link href="/dashboard/portfolio" className="text-lg text-ink-soft hover:text-ink hover:underline">Portfolio</Link>
                 </nav>
             </div>
             <div className="sm:hidden flex ml-5 mx-auto">
